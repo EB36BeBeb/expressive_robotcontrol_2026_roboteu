@@ -2,10 +2,10 @@
 """
 arm_gazebo.launch.py
 ====================
-Gazebo에서 simple_arm을 로드하고 ROS 2 컨트롤러를 활성화하는
-공식 launch 파일입니다.
+The official launch file that loads simple_arm in Gazebo
+and activates ROS 2 controllers.
 
-실행:
+Execution:
     ros2 launch /workspace/launch/arm_gazebo.launch.py
 """
 
@@ -31,11 +31,11 @@ def generate_launch_description():
     urdf_path = os.path.join(workspace, "models", "simple_arm.urdf")
     config_path = os.path.join(workspace, "config", "arm_controllers.yaml")
 
-    # URDF 파일 읽기
+    # Read URDF file
     with open(urdf_path, "r") as f:
         robot_description = f.read()
 
-    # ── 1) Gazebo 빈 월드 실행 ──
+    # ── 1) Launch Gazebo empty world ──
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
@@ -43,10 +43,10 @@ def generate_launch_description():
                 "launch", "gazebo.launch.py"
             )
         ),
-        launch_arguments={"world": ""}.items(),  # 빈 월드
+        launch_arguments={"world": ""}.items(),  # Empty world
     )
 
-    # ── 2) Robot State Publisher (TF 트리) ──
+    # ── 2) Robot State Publisher (TF Tree) ──
     robot_state_publisher = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
@@ -58,7 +58,7 @@ def generate_launch_description():
         ],
     )
 
-    # ── 3) Gazebo에 로봇 스폰 ──
+    # ── 3) Spawn robot in Gazebo ──
     spawn_entity = Node(
         package="gazebo_ros",
         executable="spawn_entity.py",
@@ -73,7 +73,7 @@ def generate_launch_description():
         ],
     )
 
-    # ── 4) 컨트롤러 활성화 (스폰 완료 후) ──
+    # ── 4) Activate controllers (After spawn is complete) ──
     load_joint_state_broadcaster = ExecuteProcess(
         cmd=["ros2", "control", "load_controller",
              "--set-state", "active", "joint_state_broadcaster"],
@@ -86,7 +86,7 @@ def generate_launch_description():
         output="screen",
     )
 
-    # 스폰 완료 후 컨트롤러 순차 활성화
+    # Sequentially activate controllers after spawning
     activate_after_spawn = RegisterEventHandler(
         OnProcessExit(
             target_action=spawn_entity,

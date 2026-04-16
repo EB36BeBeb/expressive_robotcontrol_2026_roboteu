@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!--
   simple_arm.urdf
-  3관절 로봇 팔 (base → link1 → link2 → link3 → end_effector)
-  관절: shoulder_pan (Z축 회전), shoulder_lift (Y축 회전), elbow (Y축 회전)
+  3-DOF robot arm (base -> link1 -> link2 -> link3 -> end_effector)
+  Joints: shoulder_pan (Z axis rot), shoulder_lift (Y axis rot), elbow (Y axis rot)
 -->
 <robot name="simple_arm">
 
-  <!-- Base Link (고정) -->
+  <!-- Base Link (Fixed) -->
   <link name="base_link">
     <visual>
       <geometry>
@@ -29,7 +29,7 @@
     </inertial>
   </link>
 
-  <!-- Link 1 (상단 베이스 ~ 첫 번째 관절) -->
+  <!-- Link 1 (Upper base ~ first joint) -->
   <link name="link1">
     <visual>
       <geometry>
@@ -52,7 +52,7 @@
     </inertial>
   </link>
 
-  <!-- Link 2 (전완 상단) -->
+  <!-- Link 2 (Upper forearm) -->
   <link name="link2">
     <visual>
       <geometry>
@@ -75,7 +75,7 @@
     </inertial>
   </link>
 
-  <!-- Link 3 (전완 하단 / 손목) -->
+  <!-- Link 3 (Lower forearm / wrist) -->
   <link name="link3">
     <visual>
       <geometry>
@@ -98,7 +98,7 @@
     </inertial>
   </link>
 
-  <!-- End Effector (그리퍼 끝) -->
+  <!-- End Effector (Gripper tip) -->
   <link name="end_effector">
     <visual>
       <geometry>
@@ -120,7 +120,7 @@
     </inertial>
   </link>
 
-  <!-- 관절 1: shoulder_pan (베이스 → link1, Z축 회전) -->
+  <!-- Joint 1: shoulder_pan (base -> link1, Z axis rot) -->
   <joint name="shoulder_pan" type="revolute">
     <parent link="base_link"/>
     <child link="link1"/>
@@ -130,7 +130,7 @@
     <dynamics damping="0.1" friction="0.1"/>
   </joint>
 
-  <!-- 관절 2: shoulder_lift (link1 → link2, Y축 회전) -->
+  <!-- Joint 2: shoulder_lift (link1 -> link2, Y axis rot) -->
   <joint name="shoulder_lift" type="revolute">
     <parent link="link1"/>
     <child link="link2"/>
@@ -140,7 +140,7 @@
     <dynamics damping="0.1" friction="0.1"/>
   </joint>
 
-  <!-- 관절 3: elbow (link2 → link3, Y축 회전) -->
+  <!-- Joint 3: elbow (link2 -> link3, Y axis rot) -->
   <joint name="elbow" type="revolute">
     <parent link="link2"/>
     <child link="link3"/>
@@ -150,14 +150,14 @@
     <dynamics damping="0.1" friction="0.1"/>
   </joint>
 
-  <!-- 고정 관절: elbow → end_effector -->
+  <!-- Fixed Joint: elbow -> end_effector -->
   <joint name="wrist_to_ee" type="fixed">
     <parent link="link3"/>
     <child link="end_effector"/>
     <origin xyz="0 0 0.12" rpy="0 0 0"/>
   </joint>
 
-  <!-- Gazebo ros2_control 인터페이스 -->
+  <!-- Gazebo ros2_control interface -->
   <ros2_control name="simple_arm_hardware" type="system">
     <hardware>
       <plugin>gazebo_ros2_control/GazeboSystem</plugin>
@@ -188,7 +188,7 @@
     </joint>
   </ros2_control>
 
-  <!-- Gazebo 플러그인 -->
+  <!-- Gazebo Plugins -->
   <gazebo>
     <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
       <parameters>/workspace/config/arm_controllers.yaml</parameters>
@@ -198,7 +198,7 @@
     </plugin>
   </gazebo>
 
-  <!-- Gazebo 재질 설정 -->
+  <!-- Gazebo Materials Settings -->
   <gazebo reference="base_link">
     <material>Gazebo/DarkGrey</material>
   </gazebo>

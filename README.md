@@ -1,7 +1,6 @@
-# ROS 2 · MuJoCo · Gazebo 개발 환경 가이드
+# ROS 2 · MuJoCo · Gazebo Development Environment Guide
 
-이 저장소는 Docker를 사용하여 **Windows 환경**에서  
-**ROS 2 Humble + MuJoCo + Gazebo** 시뮬레이션을 실행하는 환경을 제공합니다.
+This repository provides a Docker-based environment for running **ROS 2 Humble + MuJoCo + Gazebo** simulations on Windows.
 
 ```
 [Publisher] ──/arm/joint_command──► [MuJoCo Viewer]
@@ -10,71 +9,71 @@
 
 ---
 
-## 📂 프로젝트 구조
+## 📂 Project Structure
 
-**📖 [팀 CI/CD 및 Git 협업 매뉴얼 읽기](TEAM_CICD_MANUAL.md)**
+**📖 [Read the Team CI/CD & Git Collaboration Manual](TEAM_CICD_MANUAL.md)**
 
 ```
 Groupwork/
-├── Dockerfile                  # ROS2 + Gazebo + MuJoCo 통합 이미지
-├── docker-compose.yml          # 컨테이너 설정 (X11 + 공유 메모리)
-├── install_vcxsrv.ps1          # Windows X Server 설치 스크립트
-├── start_docker_ros2.bat       # Docker 컨테이너 시작 스크립트
+├── Dockerfile                  # ROS2 + Gazebo + MuJoCo integrated image
+├── docker-compose.yml          # Container settings (X11 + Shared memory)
+├── install_vcxsrv.ps1          # Windows X Server installation script
+├── start_docker_ros2.bat       # Docker container start script
 ├── models/
-│   ├── simple_arm.urdf         # 3관절 로봇 팔 (Gazebo용)
-│   └── simple_arm.xml          # 3관절 로봇 팔 (MuJoCo용)
+│   ├── simple_arm.urdf         # 3-DOF robot arm (for Gazebo)
+│   └── simple_arm.xml          # 3-DOF robot arm (for MuJoCo)
 ├── config/
-│   └── arm_controllers.yaml    # Gazebo ros2_control 컨트롤러 설정
+│   └── arm_controllers.yaml    # Gazebo ros2_control controller settings
 ├── launch/
-│   └── arm_gazebo.launch.py    # Gazebo 전체 런치 파일
+│   └── arm_gazebo.launch.py    # Gazebo main launch file
 └── tutorials/
-    ├── 01_publisher.py         # ROS 2 기본 퍼블리셔
-    ├── 02_listener.py          # ROS 2 기본 리스너
-    ├── 03_mujoco_check.py      # MuJoCo 설치 확인
-    ├── 04_arm_joint_publisher.py  # 팔 관절 명령 퍼블리셔 (사인파)
-    ├── 05_mujoco_arm_listener.py  # MuJoCo 뷰어 + ROS2 리스너
-    ├── 06_gazebo_arm_launch.py    # Gazebo 시뮬레이션 시작 스크립트
-    └── 07_full_demo.py            # Gazebo + MuJoCo 동시 연동 데모
+    ├── 01_publisher.py         # ROS 2 basic publisher
+    ├── 02_listener.py          # ROS 2 basic listener
+    ├── 03_mujoco_check.py      # MuJoCo installation check
+    ├── 04_arm_joint_publisher.py  # Arm joint command publisher (sine wave)
+    ├── 05_mujoco_arm_listener.py  # MuJoCo viewer + ROS2 listener
+    ├── 06_gazebo_arm_launch.py    # Gazebo simulation start script
+    └── 07_full_demo.py            # Gazebo + MuJoCo full integration demo
 ```
 
 ---
 
-## 🚀 시작하기 전에 (최초 1회)
+## 🚀 Before Getting Started (First time only)
 
-### 1. VcXsrv (X Server) 설치 및 실행
+### 1. Install and run VcXsrv (X Server)
 
 ```powershell
 .\install_vcxsrv.ps1
 ```
 
-**XLaunch 설정:**  
+**XLaunch configuration:**  
 - `Display settings`: Multiple windows, Display number: **-1**  
 - `Client startup`: Start no client  
-- `Extra settings`: **"Disable access control" 반드시 체크** ✅  
+- `Extra settings`: **MUST check "Disable access control"** ✅  
 
-### 2. Windows 방화벽 설정 (관리자 PowerShell)
+### 2. Windows Firewall Configuration (Administrator PowerShell)
 
 ```powershell
 New-NetFirewallRule -DisplayName "VcXsrv (Docker X11)" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 6000
 ```
 
-### 3. Docker 이미지 빌드
+### 3. Build Docker Image
 
 ```powershell
 docker-compose build
 ```
 
-> ⚠️ Gazebo 패키지가 추가되어 첫 빌드에 **10~20분** 소요될 수 있습니다.
+> ⚠️ As Gazebo packages are included, the first build may take **10~20 minutes**.
 
 ---
 
-## 🛠️ 컨테이너 실행
+## 🛠️ Run Container
 
 ```powershell
 .\start_docker_ros2.bat
 ```
 
-새 터미널을 추가로 열려면:
+To open a new terminal side-by-side:
 
 ```powershell
 docker exec -it groupwork_ros2 /bin/bash
@@ -82,56 +81,53 @@ docker exec -it groupwork_ros2 /bin/bash
 
 ---
 
-
-
-## 🔍 기본 점검
+## 🔍 Basic Checks
 
 ```bash
-# 1. GUI 연결 테스트
+# 1. Test GUI connectivity
 xeyes
 
-# 2. MuJoCo 설치 확인
+# 2. Check MuJoCo installation
 python3 tutorials/03_mujoco_check.py
 
-# 3. MuJoCo 기본 뷰어
+# 3. MuJoCo basic viewer
 python3 -m mujoco.viewer
 
-# 4. Gazebo 버전 확인
+# 4. Check Gazebo version
 gazebo --version
 ros2 pkg list | grep gazebo
 
-# 5. 발행 중인 토픽 확인
+# 5. Check publishing topics
 ros2 topic list
 ros2 topic echo /arm/joint_command
 ```
 
 ---
 
-## 🤖 3D Arm 시뮬레이션 (MuJoCo)
+## 🤖 3D Arm Simulation (MuJoCo)
 
 ```bash
-# 터미널 1 - MuJoCo 뷰어 + 리스너 (소프트웨어 렌더링 자동 적용)
+# Terminal 1 - MuJoCo viewer + listener (software rendering applied automatically)
 python3 tutorials/05_mujoco_arm_listener.py
 
-# 터미널 2 - 관절 명령 퍼블리셔 (사인파 궤적)
+# Terminal 2 - Joint command publisher (sine wave trajectory)
 python3 tutorials/04_arm_joint_publisher.py --mujoco-only
 ```
 
 ---
 
-
-## 🏗️ 로봇 팔 구조
+## 🏗️ Robot Arm Structure
 
 ```
 base_link
-  └─[shoulder_pan: Z축 회전 ±180°]─ link1 (0.15m)
-      └─[shoulder_lift: Y축 회전 ±90°]─ link2 (0.15m)
-          └─[elbow: Y축 회전 ±90°]─ link3 (0.12m)
-              └─[fixed]─ end_effector (빨간 구)
+  └─[shoulder_pan: Z axis rot ±180°]─ link1 (0.15m)
+      └─[shoulder_lift: Y axis rot ±90°]─ link2 (0.15m)
+          └─[elbow: Y axis rot ±90°]─ link3 (0.12m)
+              └─[fixed]─ end_effector (Red sphere)
 ```
 
-| 관절 | 축 | 범위 | 설명 |
+| Joint | Axis | Range | Description |
 |------|-----|------|------|
-| shoulder_pan  | Z | ±180° | 수평 회전 |
-| shoulder_lift | Y | ±90°  | 어깨 들어올리기 |
-| elbow         | Y | ±90°  | 팔꿈치 굽힘 |
+| shoulder_pan  | Z | ±180° | Horizontal pan |
+| shoulder_lift | Y | ±90°  | Shoulder lift |
+| elbow         | Y | ±90°  | Elbow bend |

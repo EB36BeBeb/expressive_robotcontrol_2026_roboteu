@@ -3,14 +3,14 @@ services:
   ros2:
     build: .
     container_name: groupwork_ros2
-    # 터미널 입출력을 유지합니다 (interactive, tty)
+    # Keep terminal input/output active (interactive, tty)
     stdin_open: true
     tty: true
-    # 현재 디렉토리를 컨테이너 안의 /workspace 에 마운트합니다.
+    # Mount current directory to /workspace inside the container
     volumes:
       - .:/workspace
     working_dir: /workspace
-    # 컨테이너 실행 시 자동으로 ROS 2 환경을 활성화하고 배시 쉘을 실행합니다.
+    # Automatically source ROS 2 environment and run bash shell upon container start
     command: /bin/bash -c "source /opt/ros/humble/setup.bash && exec /bin/bash"
     
     environment:
@@ -18,10 +18,10 @@ services:
       - LIBGL_ALWAYS_INDIRECT=0
       - QT_X11_NO_MITSHM=1
       - GAZEBO_MODEL_PATH=/workspace/models
-      # ROS 2 DDS 설정 (같은 컨테이너 내 localhost 통신용)
+      # ROS 2 DDS Configuration (for localhost communication within the same container)
       - ROS_DOMAIN_ID=0
       - ROS_LOCALHOST_ONLY=1
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    # GUI 및 시뮬레이션을 위해 공유 메모리 확대
+    # Expand shared memory for GUI and Simulation
     shm_size: '1gb'

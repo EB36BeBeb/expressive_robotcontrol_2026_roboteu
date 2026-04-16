@@ -1,6 +1,6 @@
 FROM osrf/ros:humble-desktop
 
-# 기본 패키지 업데이트 및 도구 설치
+# Update base packages and install utility tools
 RUN apt-get update && apt-get install -y \
     python3-pip \
     python3-tk \
@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     x11-apps \
     wget \
     curl \
-    # Gazebo (Ignition Fortress - ROS 2 Humble 기본)
+    # Gazebo (Ignition Fortress - Default for ROS 2 Humble)
     ros-humble-gazebo-ros-pkgs \
     ros-humble-gazebo-ros2-control \
     ros-humble-ros2-control \
@@ -22,16 +22,16 @@ RUN apt-get update && apt-get install -y \
     ros-humble-controller-manager \
     ros-humble-joint-trajectory-controller \
     ros-humble-forward-command-controller \
-    # 빌드 도구
+    # Build tools
     ros-humble-ament-cmake \
     python3-colcon-common-extensions \
     python3-rosdep \
-    # 기타 유틸리티
+    # Other utilities
     tmux \
     nano \
     && rm -rf /var/lib/apt/lists/*
 
-# 파이썬 라이브러리 설치
+# Install Python libraries
 RUN pip3 install --no-cache-dir \
     mujoco \
     numpy \
@@ -39,7 +39,7 @@ RUN pip3 install --no-cache-dir \
     scipy \
     transforms3d
 
-# ROS 2 환경 설정 (bashrc에 자동 source)
+# ROS 2 Environment Configuration (auto-source in bashrc)
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 RUN echo "export GAZEBO_MODEL_PATH=/workspace/models:\$GAZEBO_MODEL_PATH" >> ~/.bashrc
 RUN echo "export LIBGL_ALWAYS_INDIRECT=0" >> ~/.bashrc
