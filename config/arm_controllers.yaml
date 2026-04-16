@@ -1,0 +1,33 @@
+# Gazebo ros2_control 컨트롤러 설정
+# 파일: /workspace/config/arm_controllers.yaml
+
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+
+    # Joint State Broadcaster (관절 상태 퍼블리시)
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    # Joint Trajectory Controller (위치 제어)
+    arm_joint_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+arm_joint_trajectory_controller:
+  ros__parameters:
+    joints:
+      - shoulder_pan
+      - shoulder_lift
+      - elbow
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    state_publish_rate: 50.0
+    action_monitor_rate: 20.0
+    allow_partial_joints_goal: false
+    open_loop_control: false
+    constraints:
+      stopped_velocity_tolerance: 0.01
+      goal_time: 0.0
