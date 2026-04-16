@@ -1,17 +1,14 @@
 # ROS 2 · MuJoCo · Gazebo Development Environment Guide
 
-This repository provides a Docker-based environment for running **ROS 2 Humble + MuJoCo + Gazebo** simulations on Windows.
+This repository provides a Docker-based environment for running **ROS 2 Humble + MuJoCo** simulations on Windows.
 
 ```
 [Publisher] ──/arm/joint_command──► [MuJoCo Viewer]
-                                 └──► [Gazebo Bridge] ──► [Gazebo Sim]
 ```
 
 ---
 
 ## 📂 Project Structure
-
-**📖 [Read the Team CI/CD & Git Collaboration Manual](TEAM_CICD_MANUAL.md)**
 
 ```
 Groupwork/
