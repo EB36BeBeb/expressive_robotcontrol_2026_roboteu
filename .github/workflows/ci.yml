@@ -28,7 +28,7 @@ jobs:
     - name: Build ROS 2 Docker Image (Syntax & Build Check)
       run: |
         echo "Building docker image to check if Dockerfile is valid..."
-        docker-compose build
+        docker compose build
 
     - name: Set up Python
       uses: actions/setup-python@v4
