@@ -40,6 +40,14 @@ Groupwork/
 
 ## 🚀 Before Getting Started (First time only)
 
+### 0. Setup Git Hooks (For Team Members)
+
+To ensure the team's code formatting matches the CI pipeline automatically, run the following script in this folder to install `pre-commit` hooks.
+
+```powershell
+.\setup_dev_hooks.bat
+```
+
 ### 1. Install and run VcXsrv (X Server)
 
 ```powershell

@@ -12,24 +12,19 @@ Execution:
 import os
 from launch import LaunchDescription
 from launch.actions import (
-    DeclareLaunchArgument,
     ExecuteProcess,
     IncludeLaunchDescription,
     RegisterEventHandler,
-    TimerAction,
 )
 from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
 from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
     workspace = "/workspace"
     urdf_path = os.path.join(workspace, "models", "simple_arm.urdf")
-    config_path = os.path.join(workspace, "config", "arm_controllers.yaml")
 
     # Read URDF file
     with open(urdf_path, "r") as f:
@@ -39,8 +34,7 @@ def generate_launch_description():
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
-                get_package_share_directory("gazebo_ros"),
-                "launch", "gazebo.launch.py"
+                get_package_share_directory("gazebo_ros"), "launch", "gazebo.launch.py"
             )
         ),
         launch_arguments={"world": ""}.items(),  # Empty world
@@ -65,24 +59,41 @@ def generate_launch_description():
         name="spawn_entity",
         output="screen",
         arguments=[
-            "-topic", "robot_description",
-            "-entity", "simple_arm",
-            "-x", "0.0",
-            "-y", "0.0",
-            "-z", "0.0",
+            "-topic",
+            "robot_description",
+            "-entity",
+            "simple_arm",
+            "-x",
+            "0.0",
+            "-y",
+            "0.0",
+            "-z",
+            "0.0",
         ],
     )
 
     # ── 4) Activate controllers (After spawn is complete) ──
     load_joint_state_broadcaster = ExecuteProcess(
-        cmd=["ros2", "control", "load_controller",
-             "--set-state", "active", "joint_state_broadcaster"],
+        cmd=[
+            "ros2",
+            "control",
+            "load_controller",
+            "--set-state",
+            "active",
+            "joint_state_broadcaster",
+        ],
         output="screen",
     )
 
     load_arm_controller = ExecuteProcess(
-        cmd=["ros2", "control", "load_controller",
-             "--set-state", "active", "arm_joint_trajectory_controller"],
+        cmd=[
+            "ros2",
+            "control",
+            "load_controller",
+            "--set-state",
+            "active",
+            "arm_joint_trajectory_controller",
+        ],
         output="screen",
     )
 
@@ -100,10 +111,12 @@ def generate_launch_description():
         )
     )
 
-    return LaunchDescription([
-        gazebo,
-        robot_state_publisher,
-        spawn_entity,
-        activate_after_spawn,
-        activate_arm_ctrl_after_jss,
-    ])
+    return LaunchDescription(
+        [
+            gazebo,
+            robot_state_publisher,
+            spawn_entity,
+            activate_after_spawn,
+            activate_arm_ctrl_after_jss,
+        ]
+    )

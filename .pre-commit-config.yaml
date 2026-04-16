@@ -1,0 +1,16 @@
+repos:
+  - repo: local
+    hooks:
+      - id: black
+        name: black (Python code formatting)
+        entry: python -m black
+        language: system
+        types: [python]
+        args: [--line-length=88]
+
+      - id: flake8
+        name: flake8 (Python strict linting)
+        entry: python -m flake8
+        language: system
+        types: [python]
+        args: [--max-complexity=15, --max-line-length=127]

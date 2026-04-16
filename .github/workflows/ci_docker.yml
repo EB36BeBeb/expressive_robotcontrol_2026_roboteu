@@ -1,0 +1,29 @@
+name: Docker Build Test
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+    paths:
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+
+jobs:
+  docker-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build ROS 2 Docker Image
+      run: |
+        echo "Validating Dockerfile dependencies because Dockerfile was modified..."
+        docker compose build

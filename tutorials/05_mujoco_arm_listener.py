@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""
+r"""
 05_mujoco_arm_listener.py
 =========================
-Subscribes to the /arm/joint_command topic and operates the simple_arm model 
+Subscribes to the /arm/joint_command topic and operates the simple_arm model
 in the MuJoCo simulator in real-time.
 
 ★ Make sure to run the publisher and listener within the same container!
@@ -12,10 +12,8 @@ in the MuJoCo simulator in real-time.
 """
 
 import os
-import sys
 import time
 import threading
-import numpy as np
 
 import rclpy
 from rclpy.node import Node
@@ -67,7 +65,7 @@ class MuJoCoArmListener(Node):
         )
 
         self.get_logger().info(f"MuJoCoArmListener started - Model: {MODEL_PATH}")
-        self.get_logger().info(f"Subscribed topic: /arm/joint_command")
+        self.get_logger().info("Subscribed topic: /arm/joint_command")
         self.get_logger().info(
             "★ Run the publisher in another terminal: "
             "python3 tutorials/04_arm_joint_publisher.py"

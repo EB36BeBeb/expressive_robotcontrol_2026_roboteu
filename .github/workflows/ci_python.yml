@@ -1,4 +1,4 @@
-name: Robotics CI Workflow
+name: Python CI/CD
 
 on:
   push:
@@ -7,28 +7,12 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-test:
+  python-test:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-
-    - name: Cache Docker layers
-      uses: actions/cache@v3
-      with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
-
-    - name: Build ROS 2 Docker Image (Syntax & Build Check)
-      run: |
-        echo "Building docker image to check if Dockerfile is valid..."
-        docker compose build
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -42,12 +26,10 @@ jobs:
 
     - name: Enforce Code Formatting (Black)
       run: |
-        # Fail the build if code is not formatted by black
         black --check tutorials/ tests/
 
     - name: Strict Linting (Flake8)
       run: |
-        # stop the build if there are Python syntax errors or style issues
         flake8 tutorials/ tests/ --count --max-complexity=15 --max-line-length=127 --statistics
 
     - name: Run Pytest
