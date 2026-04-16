@@ -1,6 +1,3 @@
-import sys
-
-
 def check_mujoco():
     print("Checking MuJoCo installation...")
     try:
