@@ -28,9 +28,7 @@ Groupwork/
     ├── 02_listener.py          # ROS 2 basic listener
     ├── 03_mujoco_check.py      # MuJoCo installation check
     ├── 04_arm_joint_publisher.py  # Arm joint command publisher (sine wave)
-    ├── 05_mujoco_arm_listener.py  # MuJoCo viewer + ROS2 listener
-    ├── 06_gazebo_arm_launch.py    # Gazebo simulation start script
-    └── 07_full_demo.py            # Gazebo + MuJoCo full integration demo
+    └──  05_mujoco_arm_listener.py  # MuJoCo viewer + ROS2 listener
 ```
 
 ---
