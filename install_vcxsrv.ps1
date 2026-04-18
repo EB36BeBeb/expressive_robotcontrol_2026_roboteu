@@ -18,7 +18,7 @@ if (Get-Command winget -ErrorAction SilentlyContinue) {
         Write-Host "`n[Success] VcXsrv installation is complete." -ForegroundColor Green
         Write-Host "Now run 'XLaunch' and configure it as follows:" -ForegroundColor Yellow
         Write-Host "1. Choose 'Multiple windows'"
-        Write-Host "2. Display number: 0"
+        Write-Host "2. Display number: -1"
         Write-Host "3. Choose 'Start no client'"
         Write-Host "4. Check 'Disable access control' (Required!)" -ForegroundColor Red
         Write-Host "5. It's convenient to press 'Save configuration' to save it on the desktop."
