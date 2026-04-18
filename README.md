@@ -35,6 +35,8 @@ Groupwork/
 
 ## 🚀 Before Getting Started (First time only)
 
+> First of all, install git. Use "git clone" command to get a local repository
+
 ### 0. Setup Git Hooks (For Team Members)
 
 To ensure the team's code formatting matches the CI pipeline automatically, run the following script in this folder to install `pre-commit` hooks.
@@ -48,6 +50,8 @@ To ensure the team's code formatting matches the CI pipeline automatically, run 
 ```powershell
 .\install_vcxsrv.ps1
 ```
+
+> "Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass" might be helpful for bypassing some security issues
 
 **XLaunch configuration:**  
 - `Display settings`: Multiple windows, Display number: **-1**  
@@ -67,6 +71,7 @@ docker-compose build
 ```
 
 > ⚠️ As Gazebo packages are included, the first build may take **10~20 minutes**.
+> ⚠️ Installation of Docker Desktop application might be needed for this step to work!
 
 ---
 
