@@ -3,27 +3,32 @@ name: Docker Build Test
 on:
   push:
     branches: [ "main", "dev" ]
-    paths:
-      - 'Dockerfile'
-      - 'docker-compose.yml'
   pull_request:
     branches: [ "main" ]
-    paths:
-      - 'Dockerfile'
-      - 'docker-compose.yml'
 
 jobs:
-  docker-test:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Check for Docker changes
+      uses: dorny/paths-filter@v3
+      id: changes
+      with:
+        filters: |
+          docker:
+            - 'Dockerfile'
+            - 'docker-compose.yml'
+
     - name: Set up Docker Buildx
+      if: steps.changes.outputs.docker == 'true'
       uses: docker/setup-buildx-action@v2
 
     - name: Build ROS 2 Docker Image
+      if: steps.changes.outputs.docker == 'true'
       run: |
         echo "Validating Dockerfile dependencies because Dockerfile was modified..."
         docker compose build
