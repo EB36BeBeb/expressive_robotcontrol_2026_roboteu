@@ -10,6 +10,10 @@ services:
     volumes:
       - .:/workspace
     working_dir: /workspace
+    # Grant necessary permissions for ROS 2 logging and system access
+    privileged: true
+    security_opt:
+      - seccomp:unconfined
     # Automatically source ROS 2 environment and run bash shell upon container start
     command: /bin/bash -c "source /opt/ros/humble/setup.bash && exec /bin/bash"
     
@@ -24,4 +28,4 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     # Expand shared memory for GUI and Simulation
-    shm_size: '1gb'
+    shm_size: '2gb'
