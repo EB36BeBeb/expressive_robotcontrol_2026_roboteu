@@ -51,8 +51,9 @@ def interpolate(alpha, jerk_level):
     return (1.0 - jerk_level) * smooth + jerk_level * trembling
 
 
-def solve_3link_ik(R_target, Z_target, alpha):
-    """정면(alpha=0.0)을 바라보면서 R, Z를 도달하는 역기구학"""
+def solve_3link_ik(R_target, Z_target, alpha, elbow_up=True):
+    """정면(alpha=0.0)을 바라보면서 R, Z를 도달하는 역기구학.
+    elbow_up 파라미터를 통해 잉여자유도 해(Elbow Up/Down)를 선택합니다."""
     L1 = 0.250  # J2 ~ J3
     L2 = 0.201  # J3 ~ J5
     L3 = 0.100  # J5 ~ Tip
@@ -80,7 +81,12 @@ def solve_3link_ik(R_target, Z_target, alpha):
     cos_gamma = max(-1.0, min(1.0, cos_gamma))
     gamma = math.acos(cos_gamma)
 
-    phi2 = beta + gamma
+    if elbow_up:
+        phi2 = beta + gamma
+        # theta3는 양수 유지 (Forward 굽힘)
+    else:
+        phi2 = beta - gamma
+        theta3 = -theta3  # 음수로 변환하여 반대로 굽힘 (Elbow Down)
 
     # URDF 각도 변환 (0도일 때 수직 상승)
     theta2 = (math.pi / 2.0) - phi2
@@ -135,9 +141,8 @@ class AffectiveReactionAnimator(Node):
         self._pad_pending = False
 
         # 엎드린 초기 자세 (자연스러운 똬리 틀기)
-        # 관절이 겹치지 않는 거리(R=0.22)를 유지하면서, 머리 높이를 바닥에 아주 가깝게(Z=-0.08) 낮추어
-        # 바닥에 바짝 엎드린 웅크림 자세를 계산합니다. (실제 지상고 약 4~5cm)
-        h_t2, h_t3, h_t5 = solve_3link_ik(0.22, -0.08, 0.0)
+        # 팔꿈치를 내린(Elbow Down) 역기구학 해를 사용하여 바닥에 바짝 엎드린 자세를 만듭니다.
+        h_t2, h_t3, h_t5 = solve_3link_ik(0.20, 0.05, 0.0, elbow_up=False)
         self.home_pos = [0.0, h_t2, h_t3, 0.0, h_t5, 0.01, 0.01]
 
         self._update_motion_params()
@@ -168,17 +173,20 @@ class AffectiveReactionAnimator(Node):
         # G=1(정면 응시) -> 0.0 rad, G=0(회피) -> 0.5 rad (가볍게 옆으로 고개 돌림)
         gaze_yaw = 0.5 * (1.0 - self.G)
 
-        # 2. Volume (V) -> 머리 높이(Z) 및 도달 거리(R) 극대화
-        # V=1(흥분/과시) -> 극도로 높게(Z=0.20), 멀리(R=0.30) 뻗음 (엄청난 팽창)
-        # V=0(웅크림/위축) -> 바닥에 닿을 듯 말 듯 매우 낮게(Z=-0.08), 가깝게(R=0.22) 뻗음
-        target_Z = -0.08 + 0.28 * self.V
-        target_R = 0.22 + 0.08 * self.V
-
-        # 3. Task: "나를 봐 줘!" -> 머리(손끝) 각도는 무조건 정면(0.0)으로 고정
+        # 2. Task의 완전한 고정 (Invariant Task)
+        # 로봇의 엔드이펙터(끝단) 목표 위치는 감정에 상관없이 **항상 동일**하게 유지됩니다.
+        # 이것이 진정한 기구학적 잉여자유도 제어의 전제조건입니다.
+        target_R = 0.25
+        target_Z = 0.15
         alpha = 0.0
 
+        # 3. Volume (V) -> 잉여자유도 자세 제어 (Null-space Posture)
+        # 끝단 위치는 고정된 상태에서, 역기구학 해를 스위칭하여 자세의 팽창(Volume)을 표현합니다.
+        # V가 높으면 Elbow Up(크게 부풀림), V가 낮으면 Elbow Down(바짝 웅크림)
+        use_elbow_up = self.V >= 0.5
+
         # 역기구학 도출
-        t2, t3, t5 = solve_3link_ik(target_R, target_Z, alpha)
+        t2, t3, t5 = solve_3link_ik(target_R, target_Z, alpha, elbow_up=use_elbow_up)
 
         # 4. Gaze (G) 증폭 -> 빈 관절(joint_4)을 시선 회피(Aversion) 동작에 추가 매핑
         # G=1(당당함/지배적) -> 0.0 rad (고개를 꼿꼿이 세움)
