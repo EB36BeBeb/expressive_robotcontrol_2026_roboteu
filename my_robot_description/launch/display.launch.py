@@ -4,6 +4,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess
 from launch.conditions import LaunchConfigurationEquals
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 
@@ -23,8 +24,18 @@ def generate_launch_description():
     mode_arg = DeclareLaunchArgument(
         name="mode",
         default_value="gui",
-        choices=["gui", "animate"],
-        description="Launch mode: 'gui' for manual slider control, 'animate' for salt shaking animation",
+        choices=["gui", "animate", "handover"],
+    )
+
+    # PAD arguments for handover mode (default: baseline [0,0,0])
+    pad_p_arg = DeclareLaunchArgument(
+        name="P", default_value="0", description="Pleasure (-1~1)"
+    )
+    pad_a_arg = DeclareLaunchArgument(
+        name="A", default_value="0", description="Arousal (-1~1)"
+    )
+    pad_d_arg = DeclareLaunchArgument(
+        name="D", default_value="0", description="Dominance (-1~1)"
     )
 
     # 1. Robot State Publisher Node (always runs)
@@ -64,12 +75,30 @@ def generate_launch_description():
         condition=LaunchConfigurationEquals("mode", "animate"),
     )
 
+    # 5. Handover Mode: Runs the affective handover animation script with PAD args
+    handover_script = ExecuteProcess(
+        cmd=[
+            "python3",
+            "/workspace/tutorials/07_affective_handover.py",
+            "--pad",
+            LaunchConfiguration("P"),
+            LaunchConfiguration("A"),
+            LaunchConfiguration("D"),
+        ],
+        output="screen",
+        condition=LaunchConfigurationEquals("mode", "handover"),
+    )
+
     return LaunchDescription(
         [
             mode_arg,
+            pad_p_arg,
+            pad_a_arg,
+            pad_d_arg,
             robot_state_publisher_node,
             rviz_node,
             joint_state_publisher_gui_node,
             animate_script,
+            handover_script,
         ]
     )
